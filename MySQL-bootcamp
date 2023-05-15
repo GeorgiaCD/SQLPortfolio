@@ -1,0 +1,1166 @@
+-- combined learning sections 
+
+-- Section 10 Revisiting Data times
+CREATE TABLE parent (children TINYINT);
+INSERT INTO parent(children) VALUES (2), (7),(0);
+INSERT INTO parent(children) VALUES (200);
+-- CREATE TABLE parent (children TINYINT UNSIGNED);
+
+
+CREATE TABLE numbers (x FLOAT, y DOUBLE);
+INSERT INTO numbers (x,y) VALUES (1.123, 1.123);
+SELECT * FROM numbers;
+INSERT INTO numbers (x,y) VALUES (1.12345678, 1.12345678);
+SELECT * FROM numbers;
+
+CREATE TABLE people (
+    name VARCHAR(100),
+    birthdate DATE,
+    birthtime TIME,
+    birthdt DATETIME
+); 
+DESC people;
+
+INSERT INTO people (name, birthdate, birthtime, birthdt) VALUES ('Elton' ,'2000-12-25' ,'11:00:00', '2000-12-25 11:00:00');
+
+INSERT INTO people (name, birthdate, birthtime, birthdt)
+VALUES ('Lulu', '1985-04-11', '9:45:10', '1985-04-11 9:45:10');
+ 
+INSERT INTO people (name, birthdate, birthtime, birthdt)
+VALUES ('Juan', '2020-08-15', '23:59:00', '2020-08-15 23:59:00');
+
+SELECT CURTIME();
+SELECT CURTIME(),NOW();
+
+INSERT INTO people (name, birthdate, birthtime, birthdt)
+VALUES ('HAZEL', CURDATE(), CURTIME(), NOW()); 
+
+SELECT * FROM people;
+
+SELECT birthdate FROM people;
+
+SELECT CONCAT(MONTHNAME(birthdate),' ', DAY(birthdate),' ', YEAR(birthdate)) FROM people;
+
+SELECT birthdate FROM people;
+SELECT DATEDIFF(CURDATE(), birthdate) FROM people;
+SELECT NAME, BIRTHDATE, DATEDIFF(CURDATE(), birthdate) FROM people;
+
+SELECT DATE_ADD(CURDATE(), INTERVAL 1 DAY) AS Tomorrow;
+SELECT DATE_SUB(CURDATE(), INTERVAL 1 DAY) AS Yesterday;
+SELECT DATE_SUB(CURDATE(), INTERVAL 1 month); 
+SELECT DATE_SUB(CURDATE(), INTERVAL 1 year); 
+
+SELECT DATE_ADD(Birthdate, INTERVAL 18 YEAR) AS '18 birthday' FROM people; 
+SELECT TIMEDIFF(CURTIME(), '09:00:00');
+
+SELECT 3-4; 
+SELECT NOW() - INTERVAL 18 year;
+
+SELECT DATE_SUB(CURDATE(), INTERVAL 21 YEAR); 
+SELECT name, birthdate, birthdate + interval 21 year FROM people; 
+SELECT name, birthdate, YEAR(birthdate + interval 21 year) AS 'Will be 21' FROM people; 
+
+SELECT TIMESTAMP(NO); 
+DROP TABLE captions;
+CREATE TABLE captions(
+	text VARCHAR(150), 
+    created_at TIMESTAMP default CURRENT_TIMESTAMP()
+    );
+    
+INSERT INTO captions (text) VALUES ('just me and girls');
+INSERT INTO captions (text) VALUES ('what a lovely day'),('still slaying');
+
+SELECT * FROM captions; 
+
+CREATE TABLE captions2(
+	text VARCHAR(150), 
+    created_at TIMESTAMP default CURRENT_TIMESTAMP(),
+    updated_at TIMESTAMP ON UPDATE CURRENT_TIMESTAMP()
+    );
+
+
+INSERT INTO captions2 (text) VALUES ('just me and girls');
+INSERT INTO captions2 (text) VALUES ('what a lovely day'),('still slaying');
+INSERT INTO captions2 (text) VALUES ('I love life!!"');
+
+SELECT * FROM captions2; 
+
+UPDATE captions2 SET text= 'I love life' WHERE text='I love life!!"';
+SET SQL_SAFE_UPDATES = 0;
+
+SELECT TIME(NOW());
+SELECT CURTIME();
+
+SELECT DATE(NOW()); 
+SELECT CURTIME(); 
+
+SELECT DAYOFWEEK(NOW());
+SELECT DAYNAME(NOW());
+
+CREATE TABLE tweets(
+	Id INT AUTO_INCREMENT,
+	username VARCHAR(50),
+    contents VARCHAR(180),
+    created_at TIMESTAMP default CURRENT_TIMESTAMP(),
+    Primary KEY (Id)
+    );
+    
+    DESC tweets;
+    
+INSERT INTO tweets (username, contents) VALUES ('Joseph','I am still here'); 
+SELECT * FROM tweets;
+
+SELECT DATE_FORMAT(CURDATE(), '%m/%d/%y');
+SELECT DATE_FORMAT(NOW(), '%M %D at %k:%s');
+
+
+-- Section 11
+-- Comparison and logical operators 
+
+USE book_shop;
+SELECT * FROM books;
+SELECT title FROM books WHERE released_year = 2003;
+
+-- != this means not equal 
+SELECT title FROM books WHERE released_year != 2003;
+SELECT title, author_lname FROM books WHERE author_lname != 'Gaiman';
+
+SELECT title FROM books WHERE title LIKE '% %';
+SELECT title FROM books WHERE title NOT LIKE '% %';
+
+SELECT title, author_fname, author_lname FROM BOOKS WHERE author_fname LIKE 'Da%';
+SELECT title, author_fname, author_lname FROM BOOKS WHERE author_fname NOT LIKE 'Da%';
+SELECT title FROM books WHERE title NOT LIKE '%e%';
+
+-- <
+SELECT * FROM books WHERE released_year > 2009;
+SELECT * FROM books WHERE pages > 500;
+
+SELECT 99> 1;
+SELECT 99< 1;
+
+-- less than AND less than or equal to 
+SELECT * FROM books WHERE released_year < 2000;
+SELECT title, released_year FROM books WHERE released_year < 2000 ORDER BY released_year;
+SELECT title, pages FROM books WHERE pages < 200;
+
+SELECt * FROM books WHERE released_year <= 2010;
+SELECt * FROM books WHERE released_year >= 2010;
+
+-- AND
+SELECT * FROM books 
+WHERE author_lname = 'Eggers';
+
+SELECT * FROM books 
+WHERE author_lname = 'Eggers' AND released_year > 2010;
+
+SELECT * FROM books 
+WHERE author_lname = 'Eggers' AND 
+	released_year > 2010 AND
+    title LIKE '%CIRCLE%';
+    
+SELECT * FROM books WHERE CHAR_LENGTH(title) > 15 AND
+	pages > 500;
+    
+SELECT title, CHAR_lENGTH(title) AS 'title length', pages FROM books WHERE CHAR_LENGTH(title) > 15 AND
+	pages > 500;
+    
+-- Logical OR
+SELECT * FROM books WHERE author_lname = 'Eggers' OR
+	pages > 500;
+    
+SELECT title, pages FROM books WHERE pages < 200 OR
+	title LIKE '%stories%'; 
+
+SELECT * FROM books 
+WHERE released_year >=2004 
+AND released_year <= 2015;
+
+-- BETWEEN
+SELECT title, released_year FROM books 
+WHERE released_year BETWEEN 2004 AND 2015; 
+
+SELECT title, pages FROM books 
+WHERE pages BETWEEN 200 AND 300;
+
+SELECT title, pages FROM books 
+WHERE pages NOT BETWEEN 200 AND 300;
+
+-- Comparing dates 
+SELECT * FROM people WHERE birthdate < '2005-01-01'; 
+SELECT * FROM people WHERE YEAR(birthdate) < '2005'; 
+
+SELECT * FROM people WHERE birthtime > '12:00:00';
+SELECT * FROM people WHERE HOUR(birthtime) > 12;
+
+
+SELECT CAST('09:00:00' AS TIME); 
+SELECT CAST('09:00:00' AS TIME); 
+
+SELECT * FROM people WHERE birthtime BETWEEN '12:00:00' AND '16:00:00';
+-- CASTING the text string into Time 
+SELECT * FROM people WHERE birthtime 
+BETWEEN CAST('12:00:00' AS TIME) 
+	AND CAST('16:00:00'AS TIME);
+
+-- IN and NOT IN
+SELECT title, author_lname FROM books 
+WHERE author_lname IN ('Carver', 'lahiri' , 'Smith');
+
+
+SELECT title, author_lname FROM books 
+WHERE author_lname NOT IN ('Carver', 'lahiri' , 'Smith');
+
+SELECT title, released_year FROM books
+WHERE released_year NOT IN (2000,2002, 2004,2006,2008,2010, 2012,2014, 2016, 2018)
+AND released_year > 2000;
+
+SELECT 10 % 4;
+
+-- CASE statements 
+SELECT title, released_year, 
+	CASE
+		WHEN released_year >= 2000 THEN 'Mordern Lit'
+        ELSE '20th Century Lit'
+	END Genre
+FROM books; 
+
+DESC books;
+
+SELECT title, stock_quantity,
+CASE
+	WHEN stock_quantity BETWEEN 0 and 50 THEN '*'
+    WHEN stock_quantity BETWEEN 51 and 100 THEN '**'
+    WHEN stock_quantity BETWEEN 100 and 150 THEN '***'
+    ELSE '****'
+	END AS stock
+FROM books;
+
+SELECT * FROM books WHERE author_lname IS NULL;
+SELECT * FROM books WHERE title IS NULL;
+DELETE FROM BOOKS WHERE title IS NULL;
+SELECT * FROM BOOKS;
+
+-- Exercise 
+SELECT 1 IN (5,3) OR 9 between 8 and 10; 
+
+SELECT * FROM books WHERE released_year < 1980;
+
+SELECT * FROM books WHERE author_lname= 'Eggers'
+OR author_lname= 'Chabon';
+
+SELECT * FROM books WHERE author_lname = 'Lahiri'
+AND released_year > 2000; 
+
+SELECT * FROM books WHERE Pages BETWEEN 100 and 200; 
+
+SELECT * FROM books WHERE author_lname LIKE 'C%' 
+OR author_lname LIKE 'S%';
+ 
+SELECT title, author_lname,
+CASE
+	WHEN title LIKE '%stories%' THEN 'Short Stories'
+    WHEN title LIKE 'just kids' 
+    OR title LIKE '%heart%' THEN 'Memoir'
+    ELSE 'Novel'
+END AS Type
+FROM books;
+
+
+SELECT author_fname, author_lname FROM books;
+SELECT author_fname, author_lname, COUNT(*) 
+FROM books 
+GROUP bY author_lname , author_fname;
+
+SELECT author_fname, author_lname, CONCAT(COUNT(*),' books') AS 'first count'
+FROM books 
+GROUP bY author_lname , author_fname;
+
+
+SELECT author_fname, author_lname,
+CASE
+	WHEN COUNT(*) = 1 THEN CONCAT(COUNT(*),' book')
+    WHEN COUNT(*) > 1 THEN CONCAT(COUNT(*),' books')
+END AS COUNT
+FROM books
+GROUP BY author_lname, author_fname;
+
+-- I just had a missing comma 
+
+
+
+
+-- The solution to the final code problem 
+SELECT author_fname, author_lname,
+	CASE
+        WHEN COUNT(*) = 1 THEN '1 book'
+        ELSE CONCAT(COUNT(*), ' books')
+	END AS count
+FROM books
+WHERE author_lname IS NOT NULL
+GROUP BY author_fname, author_lname;
+ 
+-- Section 12 
+-- Constraints & ALTER TABLE
+USE book_shop;
+Select * FROM tweets;
+SELECT * FROM contacts;
+-- UNIQUE 
+CREATE TABLE contacts(
+	name VARCHAR(100) NOT NULL, 
+    number CHAR(11) NOT NULL UNIQUE
+    ); 
+    
+INSERT INTO contacts(name, number) VALUES ('Jim', '06893027821');
+INSERT INTO contacts(name, number) VALUES ('PAM', '06893027821');
+-- if we try to insert the same number we will get an error message that says 'Duplicate entry'
+
+SELECT * FROM CONTACTS;
+drop table users2;
+-- CHECK
+CREATE TABLE users(
+	id INT primary key auto_increment,
+    username VARCHAR(50) NOT NULL, 
+    age INT CHECK (age >0)
+    );
+    
+INSERT INTO users(username, age) VALUES ('Jam', 1);
+-- we get an error with the next line '3819'
+INSERT INTO users(username, age) VALUES ('Jam', 0);
+
+-- naming constraints
+CREATE TABLE users2(
+	username VARCHAR(50) NOT NULL, 
+    age INT,
+    CONSTRAINT age_not_negative CHECK (age >0)
+    );
+INSERT INTO users2 (username, age) VALUES ('Jam', 0);
+
+
+-- Multiple column constraints
+CREATE TABLE companies (
+    name VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    CONSTRAINT name_address UNIQUE (name , address)
+);
+ 
+CREATE TABLE houses (
+  purchase_price INT NOT NULL,
+  sale_price INT NOT NULL,
+  CONSTRAINT sprice_gt_pprice CHECK(sale_price >= purchase_price)
+);
+Select * FROM companies;
+
+-- ALTER TABLE 
+-- Add column 
+ALTER TABLE companies
+ADD COLUMN phone VARCHAR(15) ;
+ 
+ALTER TABLE companies
+ADD COLUMN employee_count INT NOT NULL DEFAULT 1;
+
+-- dropping 
+ALTER TABLE companies
+DROP phone;
+
+-- Renaming table 
+RENAME TABLE companies TO suppliers;
+ALTER TABLE suppliers RENAME TO companies;
+ALTER TABLE companies RENAME TO suppliers;
+
+SELECT * FROM companies;
+
+ALTER TABLE companies
+RENAME COLUMN name to company_name;
+DESC companies;
+
+ALTER TABLE companies
+MODIFY company_name VARCHAR(100) DEFAULT 'unknown';
+
+-- altering constraints 
+ALTER TABLE houses 
+ADD CONSTRAINT positive_pprice CHECK (purchase_price >= 0);
+
+ALTER TABLE houses DROP CONSTRAINT positive_pprice;
+
+DESC users;
+SELECT * FROM users;
+INSERT INTO users (username, age)
+VALUES 	('Paula123',23),
+		('joesef_singer',26),
+		('Stilly_Woozy', 27),
+        ('Yes-its-me',10),
+        ('ariannesmall2',15),
+        ('justjill1992',31);
+        
+SELECT * FROM users;
+
+DROP TABLE tweets;
+
+-- Section 13 
+-- One to many joins
+SET SQL_SAFE_UPDATES = 0; 
+
+
+CREATE DATABASE shop;
+USE shop;
+
+DROP tables customers;
+DROP table orders;
+
+-- working with foreign key 
+
+CREATE TABLE customers (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	first_name VARCHAR(50) NOT NULL, 
+    last_name VARCHAR(50),
+    email VARCHAR(50)
+    ); 
+    
+CREATE TABLE orders(
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    order_date DATE,
+    amount DECIMAL(8,2),
+    customer_id INT,
+    FOREIGN KEY (customer_id) references customers(id)
+    );
+    
+-- FOREIGN KEY (customer_id) references customers(id)
+
+    
+INSERT INTO customers (first_name, last_name, email) 
+VALUES ('Boy', 'George', 'george@gmail.com'),
+       ('George', 'Michael', 'gm@gmail.com'),
+       ('David', 'Bowie', 'david@gmail.com'),
+       ('Blue', 'Steele', 'blue@gmail.com'),
+       ('Bette', 'Davis', 'bette@aol.com');
+       
+       
+INSERT INTO orders (order_date, amount, customer_id)
+VALUES ('2016-02-10', 99.99, 1),
+       ('2017-11-11', 35.50, 1),
+       ('2014-12-12', 800.67, 2),
+       ('2015-01-03', 12.50, 2),
+       ('1999-04-11', 450.25, 5);
+
+select * from customers;
+select * from orders;
+
+-- cross joins
+-- To perform a (kind of useless) cross join
+SELECT * FROM orders, customers;
+
+--  inner join 
+SELECT * FROM customers
+JOIN orders
+	ON orders.customer_id = customers.id ;
+    
+SELECT first_name, last_name, order_date, amount FROM customers
+JOIN orders
+	ON orders.customer_id = customers.id ;
+    
+-- inner join with GROUP BY 
+SELECT first_name, last_name, SUM(amount) AS total FROM customers
+JOIN orders
+	ON orders.customer_id = customers.id 
+    GROUP BY first_name, last_name
+    ORDER BY total;
+    
+-- left join
+
+SELECT first_name, last_name, order_date, amount FROM customers
+LEFT JOIN orders
+	ON orders.customer_id = customers.id;
+    
+
+-- left join with GROUP BY
+SELECT first_name, last_name, SUM(amount) AS money_spent FROM customers
+LEFT JOIN orders
+ON orders.customer_id = customers.id 
+GROUP BY first_name, last_name;
+
+SELECT first_name, last_name, IFNULL(SUM(amount), 0) AS money_spent FROM customers
+LEFT JOIN orders
+ON orders.customer_id = customers.id 
+GROUP BY first_name, last_name;
+
+-- IFNULL(SUM(amount),0) : this means if SUM(amount) is NULL then replace it with 0 
+
+-- right join 
+SELECT 
+    first_name, last_name, order_date, amount
+FROM customers
+RIGHT JOIN orders ON customers.id = orders.customer_id;
+-- this is the same as the inner join because every single order has a customer id 
+SELECT * FROM orders;
+
+-- on delete cascade
+DELETE FROM customers WHERE last_name ='George';
+
+
+DROP TABLE orders;
+DROP table customers;
+
+CREATE TABLE orders(
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    order_date DATE,
+    amount DECIMAL(8,2),
+    customer_id INT,
+    FOREIGN KEY (customer_id) references customers(id) ON DELETE CASCADE
+    );
+-- on delete casacde after the foreign key constrain means if that customer with that id delete every row from orders that has that corresponding id
+SELECT * FROM customers;
+DELETE FROM customers WHERE last_name ='George';
+-- now Boy george and his order will be deleted from the orders and customers table 
+
+
+-- Joins exercise 
+
+CREATE TABLE students(
+	id INT PRIMARY KEY auto_increment,
+    first_name VARCHAR(50) NOT NULL
+);
+
+
+CREATE TABLE papers(
+    title VARCHAR(100),
+    grade DECIMAL(3,0),
+    student_id INT,
+	FOREIGN KEY (student_id) references students(id)
+);
+
+INSERT INTO students (first_name) VALUES 
+('Caleb'), ('Samantha'), ('Raj'), ('Carlos'), ('Lisa');
+ 
+INSERT INTO papers (student_id, title, grade ) VALUES
+(1, 'My First Book Report', 60),
+(1, 'My Second Book Report', 75),
+(2, 'Russian Lit Through The Ages', 94),
+(2, 'De Montaigne and The Art of The Essay', 98),
+(4, 'Borges and Magical Realism', 89);
+
+SELECT * FROM papers;
+SELECT * FROM students;
+
+
+SELECT first_name, title, grade
+FROM papers
+Left Join students ON papers.student_id=students.id 
+ORDER BY first_name;
+
+-- left join 
+SELECT first_name, title, grade FROM students
+Left Join papers 
+ON papers.student_id=students.id;
+
+
+SELECT first_name, title, grade
+FROM students
+Left Join papers ON papers.student_id=students.id 
+ORDER BY first_name;
+
+
+-- If null
+SELECT first_name, IFNULL(title, 'MISSING'), IFNULL(grade, 0) 
+FROM students
+Left Join papers ON papers.student_id=students.id;
+
+-- printing an average of all the grades -- 
+SELECT first_name, title, AVG(grade)
+FROM students
+Left Join papers ON papers.student_id=students.id 
+GROUP BY first_name,student.id;
+
+SELECT first_name, IFNULL(AVG(grade),0) AS total
+	FROM students
+Left Join papers 
+ON papers.student_id=students.id 
+GROUP BY first_name
+ORDER BY total DESC;
+
+
+SELECT first_name, IFNULL(AVG(grade),0) AS total, 
+		CASE
+        WHEN IFNULL(AVG(grade),0) > 75 THEN 'passing'
+        ELSE 'failing'
+        END
+	FROM students
+Left Join papers 
+ON papers.student_id=students.id 
+GROUP BY first_name
+ORDER BY total DESC;
+
+
+-- SELECT first_name, last_name, SUM(amount) AS money_spent FROM customers
+-- LEFT JOIN orders
+-- ON orders.customer_id = customers.id 
+-- GROUP BY first_name, last_name;
+
+ 
+SELECT 
+    first_name, IFNULL(AVG(grade), 0) AS average
+FROM
+    students
+        LEFT JOIN
+    papers ON students.id = papers.student_id
+GROUP BY first_name
+ORDER BY average DESC;
+
+
+
+
+SELECT 
+	first_name, IFNULL(AVG(grade), 0) AS average,
+		CASE
+			WHEN IFNULL(AVG(grade), 0) >= 40 THEN 'Pass'
+			ELSE 'Fail'
+		END AS 'status'
+    FROM students
+	LEFT JOIN papers ON students.id = papers.student_id
+    GROUP BY first_name
+    ORDER BY average;
+
+-- Solution 
+SELECT 
+    first_name,
+    IFNULL(AVG(grade), 0) AS average,
+    CASE
+        WHEN IFNULL(AVG(grade), 0) >= 75 THEN 'passing'
+        ELSE 'failing'
+    END AS passing_status
+FROM
+    students
+        LEFT JOIN
+    papers ON students.id = papers.student_id
+GROUP BY first_name
+ORDER BY average DESC;
+
+-- Section 14
+-- Many to many 
+
+-- Basics 
+CREATE DATABASE tv_db;
+USE tv_db;
+
+CREATE TABLE reviewers(
+	id INT PRIMARY KEY auto_increment,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL
+    );
+    
+CREATE TABLE series (
+	id INT PRIMARY KEY auto_increment,
+    title VARCHAR(100),
+    released_year YEAR,
+    genre VARCHAR(100)
+);
+    
+    
+CREATE TABLE reviews(
+	id INT PRimary key auto_increment,
+    rating DECIMAL(2,1),
+    series_id INT,
+    reviewer_id INT,
+    FOREIGN KEY (series_id) references series(id),
+    FOREIGN KEY (reviewer_id) references reviewers(id)
+    );
+    DROP TABLE reviews;
+    show tables;
+  
+  -- Copied insert data (removed from code for simplicity)
+    
+    
+select * from reviews;
+select * from reviewers;
+select * from series;
+
+-- challenge 1
+SELECT
+   title, rating
+FROM
+  series
+JOIN
+   reviews ON series.id = reviews.series_id 
+   LIMIT 15;
+
+-- challenge 2
+SELECT
+   title, AVG(rating) AS avg_rating
+FROM
+  series
+JOIN
+   reviews ON series.id = reviews.series_id 
+GROUP BY title
+ORDER BY avg_rating;
+
+-- Adding Rounding numbers
+SELECT ROUND(3.8542);
+
+-- The second digit in the argument means how many digits you want after the point 
+SELECT ROUND(3.8542,2);
+
+SELECT
+   title, ROUND(AVG(rating),1) AS avg_rating
+FROM
+  series
+JOIN
+   reviews ON series.id = reviews.series_id 
+GROUP BY title
+ORDER BY avg_rating;
+
+-- challenge 3 
+
+SELECT
+   first_name, last_name, rating
+FROM
+  reviewers
+JOIN
+   reviews ON reviewers.id = reviews.reviewer_id;
+   
+-- challenge 4 (identify the series that has no reviews) 
+SELECT * FROM series;
+
+SELECT * 
+FROM series 
+LEFT JOIN reviews ON series.id=reviews.series_id;
+
+SELECT * 
+FROM series 
+LEFT JOIN reviews ON series.id=reviews.series_id WHERE rating is NULL ;
+
+SELECT title AS unreviewed_series 
+FROM series 
+LEFT JOIN reviews ON series.id=reviews.series_id WHERE rating is NULL ;
+
+-- challenge 5
+SELECT genre, ROUND(avg(rating),1) AS avg_rating 
+FROM series 
+JOIN reviews ON series.id=reviews.series_id
+GROUP BY genre;
+
+-- challenge 6 
+
+SELECT * 
+FROM reviewers
+LEFT JOIN reviews ON reviewers.id=reviews.reviewer_id ;
+
+
+SELECT first_name,last_name, COUNT(rating),MIN(rating), MAX(rating),AVG(rating)
+FROM reviewers
+LEFT JOIN reviews ON reviewers.id=reviews.reviewer_id
+GROUP BY first_name,last_name;
+
+-- Final challenge 6 answer 
+SELECT 
+first_name,last_name, 
+IFNULL(COUNT(rating),0) AS COUNT,
+IFNULL(MIN(rating),0) AS MIN, 
+IFNULL( MAX(rating),0) AS MAX,
+IFNULL(AVG(rating),0) AS AVG,
+	CASE
+		WHEN IFNULL(COUNT(rating),0) > 0 THEN 'active'
+		ELSE 'inactive'
+    END AS status
+FROM reviewers
+LEFT JOIN reviews ON reviewers.id=reviews.reviewer_id
+GROUP BY first_name,last_name;
+
+-- We can use IF statement instead of case in this example because there is only one argument we are testing 
+-- IF(COUNT(rating)>0, 'active','inactive'),
+
+-- challenge 7 (joining three tables)
+
+SELECT title, rating, CONCAT(first_name,' ',last_name) AS reviewer
+FROM Reviews
+LEFT JOIN series ON series.id=reviews.series_id
+LEFT JOIN reviewers ON reviewers.id=reviews.reviewer_id;
+
+-- SELECT title, rating, CONCAT(first_name,' ',last_name) AS reviewer
+-- FROM Reviews
+-- JOIN series ON series.id=reviews.series_id
+-- JOIN reviewers ON reviewers.id=reviews.reviewer_id
+-- ORDER BY title;
+
+
+-- Section 15
+-- Views, Modes and more 
+USE tv_db;
+SELECT * FROM reviews;
+
+SELECT title, released_year, genre, rating, first_name, last_name FROM reviews 
+join series ON series.id=reviews.series_id
+join reviewers ON reviewers.id = reviews.reviewer_id;
+
+CREATE VIEW full_reviews AS 
+SELECT title, released_year, genre, rating, first_name, last_name FROM reviews 
+join series ON series.id=reviews.series_id
+join reviewers ON reviewers.id = reviews.reviewer_id;
+
+-- we see full_reviews in the tables but we didnt 'create' a table we have created a virtual table. 
+SHOW TABLEs;
+SELECT * FROM full_reviews;
+
+SELECT * FROM full_reviews WHERE genre = 'animation';
+SELECT genre, AVG(rating) FROM full_reviews GROUP BY genre;
+
+-- Updateable views
+CREATE VIEW ordered_series As
+SELECT * FROM series ORDER BY released_year;
+-- create or replace
+CREATE OR REPLACE VIEW ordered_series AS 
+SELECT * FROM series ORDER BY released_year DESC;
+-- alter view
+ALTER VIEW ordered_series AS
+SELECT * FROM series ORDER BY released_year;
+
+-- drop view 
+DROP VIEW ordered_series;
+
+SELECT title, AVG(rating) 
+	FROM full_reviews 
+GROUP By title HAVING count(rating) > 2;
+
+-- with rollup 
+SELECT AVG(rating) FROM full_reviews;
+SELECT title, AVG(rating) FROM full_reviews GROUP BY title;
+SELECT title, ROUND(AVG(rating),2) FROM full_reviews GROUP BY title WITH ROLLUP;
+
+SELECT title, COUNT(rating) FROM full_reviews GROUP BY title WITH ROLLUP;
+
+-- SQL modes basics
+SELECT @@GLOBAL.sql_mode;
+SELECT @@SESSION.sql_mode;
+-- Setting to mode 
+-- SET MODE sql_mode = 'mode';
+SELECT 3/0;
+SHOW WARNINGS;
+
+-- more modes 
+SELECT title, AVG(rating) FROM series 
+JOIN reviews ON reviews.series_id = series.id
+GROUP BY title;
+
+-- Section 16
+-- windows functions 
+SHOW DATABASES;
+USE shop;
+CREATE TABLE employees (
+    emp_no INT PRIMARY KEY AUTO_INCREMENT,
+    department VARCHAR(20),
+    salary INT
+);
+ 
+INSERT INTO employees (department, salary) VALUES
+('engineering', 80000),
+('engineering', 69000),
+('engineering', 70000),
+('engineering', 103000),
+('engineering', 67000),
+('engineering', 89000),
+('engineering', 91000),
+('sales', 59000),
+('sales', 70000),
+('sales', 159000),
+('sales', 72000),
+('sales', 60000),
+('sales', 61000),
+('sales', 61000),
+('customer service', 38000),
+('customer service', 45000),
+('customer service', 61000),
+('customer service', 40000),
+('customer service', 31000),
+('customer service', 56000),
+('customer service', 55000);
+ 
+ -- OVER()
+SELECT avg(salary) FROM employees;
+SELECT avg(salary) OVER() FROM employees;
+ 
+SELECT emp_no, department, salary, AVG(salary) OVER() FROM employees;
+
+SELECT emp_no, 
+	department, 
+	salary, 
+	MIN(salary) OVER(),
+    MAX(salary) OVER()
+FROM employees;
+
+SELECT
+	MIN(salary),
+    MAX(salary)
+FROM employees;
+
+-- BY partition 
+SELECT emp_no, 
+	department, 
+	salary, 
+    AVG(salary) OVER(PARTITION BY department) AS dept_avg,
+	AVG(salary) OVER() AS comp_avg,
+	MIN(salary) OVER(PARTITION BY department) dept_min,
+    MAX(salary) OVER(PARTITION BY department) dept_max
+FROM employees;
+
+SELECT emp_no, 
+	department, 
+	salary, 
+    COUNT(*) OVER(PARTITION BY department) AS dept_count
+    FROM employees;
+    
+SELECT emp_no, 
+	department, 
+	salary, 
+    SUM(salary) OVER() AS total_payroll,
+    SUM(salary) OVER(PARTITION BY department) AS dept_payroll
+    FROM employees;
+    
+-- ORDER BY with windows
+SELECT emp_no, 
+	department, 
+	salary, 
+    SUM(salary) OVER(PARTITION BY department ORDER BY salary DESC) AS rolling_dept_salary,
+    SUM(salary) OVER(PARTITION BY department) AS total_dept_salary
+    FROM employees;
+
+-- RANK()
+SELECT emp_no, 
+	department, 
+	salary, 
+    RANK() OVER(PARTITION BY department ORDER BY salary DESC) AS dept_salary_rank,
+    RANK() OVER(ORDER BY salary DESC) AS overall_salary_rank
+    FROM employees
+    ORDER BY department;
+    
+-- DENSE_RANK & ROW_NUMBER()
+SELECT
+   emp_no,
+   department,
+   salary,
+   ROW_NUMBER() OVER(PARTITION BY department ORDER BY SALARY DESC) as dept_row_number,
+   RANK() OVER(PARTITION BY department ORDER BY SALARY DESC) as dept_salary_rank,
+   RANK() OVER(ORDER BY salary DESC) as overall_rank,
+   DENSE_RANK() OVER(ORDER BY salary DESC) as overall_dense_rank,
+   ROW_NUMBER() OVER(ORDER BY salary DESC) as overall_num
+FROM employees ORDER BY overall_rank;
+
+
+-- NTILE()
+SELECT
+   emp_no,
+   department,
+   salary,
+   NTILE(4) OVER(PARTITiON BY department ORDER BY salary DESC) AS dept_salary_quant,
+   NTILE(4) OVER(ORDER BY salary DESC) AS salary_quant
+FROM employees;
+
+-- first_value()
+SELECT
+   emp_no,
+   department,
+   salary,
+   FIRST_VALUE(emp_no) OVER(PARTITION BY department ORDER BY salary DESC) AS highest_dept,
+   FIRST_VALUE(emp_no) OVER(ORDER BY salary DESC) AS highest_overall
+FROM employees;
+
+-- lead and lag
+SELECT
+   emp_no,
+   department,
+   salary,
+   salary - LEAD(salary) OVER(ORDER BY salary DESC) AS salary_diff
+   FROM employees;
+   
+SELECT
+   emp_no,
+   department,
+   salary,
+   salary - LAG(salary) OVER(ORDER BY salary DESC) AS salary_diff
+   FROM employees;
+-- Section 17
+-- instagram database clone 
+
+-- SHOW DATABASES;
+CREATE DATABASE ig_clone;
+USE ig_clone;
+
+-- user schema 
+CREATE TABLE users(
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+    );
+
+INSERT INTO users (username) 
+VALUES ('Cluethecat'), ('Charliebrown'),('My_name_is_jeff');
+
+-- photos schema 
+CREATE TABLE photos (
+	id INT PRIMARY KEY auto_increment,
+    image_url VARCHAR(255) NOT NULL,
+    user_id INT NOT NULL, 
+    created_at TIMESTAMP DEFAULT NOW(), 
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+    
+DESC photos;
+SELECT * FROM users;
+
+-- comments schema 
+CREATE TABLE comments(
+	id INT PRIMARY KEY auto_increment,
+	comment_text VARCHAR(255) NOT NULL,
+	user_id INT NOT NULL, 
+	photo_id INT NOT NULL, 
+	created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (photo_id) REFERENCES photos(id)
+    );
+
+-- likes schema
+CREATE TABLE likes(
+	user_id INT NOT NULL,
+    photo_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (photo_id) REFERENCES photos(id),
+    PRIMARY KEY (user_id, photo_id)
+    );
+    
+-- followers schema 
+CREATE TABLE follows(
+    follower_id INT NOT NULL,
+	followee_id INT NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (follower_id) REFERENCES users(id),
+    FOREIGN KEY (followee_id) REFERENCES users(id),
+    PRIMARY KEY (follower_id, followee_id)
+);
+DESC follows;
+
+-- implementing tag tables
+CREATE TABLE tags(
+	id INT PRIMARY KEY auto_increment,
+	tag_name VARCHAR(255) UNIQUE, 
+    created_at TIMESTAMP DEFAULT NOW()
+    );
+    
+CREATE TABLE photo_tags(
+	photo_id INT NOT NULL,
+    tag_id INT NOT NULL, 
+    FOREIGN KEY (photo_id) REFERENCES photos(id),
+    FOREIGN KEY (tag_id) REFERENCES tags(id),
+    PRIMARY KEY (photo_id, tag_id)
+    );
+    
+SHOW TABLES;
+
+-- Section 18 
+-- working with lots of IG data 
+
+-- insert instagram data which has been removed for space
+
+-- challenge 1 
+-- find the 5 oldest users 
+DESC users;
+
+SELECT * from users 
+ORDER BY created_at LIMIT 5;
+
+-- challenge 2 
+-- what day of the week do most people register 
+SELECT DAYNAME(created_at) AS created_day, COUNT(DAYNAME(created_at)) AS created_day_count FROM users
+GROUP BY created_day
+ORDER BY created_day_count DESC;
+
+-- challenge 3
+-- identify users with no photos
+DESC photos;
+SELECT username, photos.id 
+	FROM users 
+LEFT JOIn photos 
+    ON users.id=photos.user_id
+WHERE photos.id IS NULL;
+
+-- challenge 4 
+-- we want to know who has the most likes on a photo
+show tables;
+DESC likes;
+
+-- working out the most likes 
+select * from likes;
+SELECT photo_id, COUNT(*) AS count_likes FROM likes 
+GROUP BY photo_id
+ORDER BY count_likes DESC;
+
+-- photo and the amount of likes 
+SELECT photo_id, COUNT(*) AS likes_count FROM likes
+GROUP BY photo_id;
+
+DESC likes;
+DESC photos;
+-- joing likes and photos to see user_id 
+SELECT * from LIKES
+LEFT JOIN photos ON photos.id = likes.photo_id;
+
+-- grouping the likes and photo join 
+SELECT photo_id, COUNT(*)  from LIKES
+LEFT JOIN photos ON photos.id = likes.photo_id
+GROUP BY photo_id;
+
+-- joing the three tables and getting the count(likes) information 
+-- final 
+SELECT 
+	username, 
+    photo_id, 
+    COUnt(*) AS likes_count 
+from photos
+	LEfT JOIN users ON photos.user_id = users.id
+	LEFT JOIN  likes ON likes.photo_id = photos.id
+GROUP BY 
+	likes.photo_id, 
+	photos.user_id
+ORDER BY likes_count DESC
+LIMIT 1;
+
+-- challenge 
+-- how many times does the average user post
+SELECT  COUNT(*) FROM photos;
+SELECt COUNT(*) FROM users;
+SELECT 252/100;
+--  (sub queries) average
+SELECT(SELECT COUNT(*) FROM photos)/ (SELECt COUNT(*) FROM users) AS avg;
+
+-- challenge 6 
+-- 5 most popular hashtags 
+SHOW Tables;
+DESC tags;
+DESC photo_tags;
+
+-- joining the 3 tables 
+SELECT * FROM photo_tags
+JOIN photos ON photos.id = photo_tags.photo_id
+JOIN tags ON tags.id= photo_tags.tag_id;
+
+-- do not need photos tables to be joined so it has been commited out 
+-- photos ON photos.id = photo_tags.photo_id JOIN
+-- counting the tags 
+SELECT 
+    tag_name, COUNT(*) AS tag_count
+FROM
+    photo_tags
+        JOIN
+    tags ON tags.id = photo_tags.tag_id
+GROUP BY tag_name
+ORDER BY tag_count DESC
+LIMIT 5;
+
+-- Find all the users who have liked all the photos on the site 
+SELECT 
+    users.id, username, COUNT(*) AS num_likes
+FROM
+    users
+        INNER JOIN
+    likes ON users.id = likes.user_id
+GROUP BY users.id
+HAVING num_likes = (SELECT COUNT(*) FROM photos);
+
