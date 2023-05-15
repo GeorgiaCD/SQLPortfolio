@@ -1,6 +1,146 @@
 -- combined learning sections 
 
+-- Section 7 String functions 
+
+-- CONCAT(column, anotherColumn)
+SELECT CONCAT( author_fname, ‘!!!’ ) FROM books;
+
+SELECT CONCAT( author_fname, author_lname) AS full_name FROM books;
+
+SELECT CONCAT_WS(‘-‘, title, author_fname, author_lname,);
+
+SELECT SUBSTRING(title, 1, 15) FROM books;
+
+SELECT SUBSTRING(, 1, 15) FROM books;
+
+SELECT SUBSTRING(author_lname, 1, 1), author_lname FROM books;
+
+SELECT SUBSTRING(author_lname, 1, 1) AS inital, author_lname FROM books;
+
+-- Getting the first 10 charcters from title 
+SELECT SUBSTRING(title, 1,10) AS short_title FROM books;
+-- Now combining the short name with ‘…’ to make it clear it a shorten version
+
+SELECT CONCAT(SUBSTRING(title, 1,10), '...') AS short_title FROM books;
+
+
+SELECT CONCAT(
+	SUBSTR(author_fname, 1,1),'.', SUBSTR(author_lname, 1,1),'.')
+    AS Inital FROM books;
+
+SELECT REPLACE(title, ' ', '-') FROM books;
+
+SELECT REPLACE(title, 'e ', '3') FROM books;
+
+
+SELECT 
+    CHAR_LENGTH(title) AS len, title
+FROM
+    BOOKS
+ORDER BY len DESC;
+
+
+SELECT CONCAT(
+	'I LOVE ', UPPER(title), ' !!!')
+    FROM books;
+
+
+SELECT CONCAT(
+	'I LOVE ', UPPER(title), ' !!!')
+    FROM books LImit 1;
+
+
+-- String function exercise 
+
+SELECT UPPER(
+REVERSE('Why does my cat look at me with such hatred?'));
+
+
+SELECT 
+    author_lname AS forwards, REVERSE(author_lname) AS backwards
+FROM
+    books;
+
+SELECT 
+    UPPER(CONCAT_WS(' ', author_fname, author_lname)) 	
+    AS 'full name in caps'
+FROM BOOKS
+
+
+SELECT CONCAT(title,
+            ' was realeased in ',
+            released_year) AS blurb
+FROM books;
+
+
+
+
+-- Section 8 Refining Selection 
+
+-- DISTINCT
+SELECT DISTINCT(author_lname)  FROM BOOKS;
+
+SELECT DISTINCT(CONCAT(author_fname,' ', author_lname))
+ FROM Books;
+
+SELECT DISTINCT author_fname, author_lname FROM books;
+
+SELECT title, author_fname  FROM books WHERE author_lname= 'Harris';
+
+
+-- Refining Selection exercise 
+SELECT title FROM books WHERE title LIKE '%Stories%';
+SELECT title, pages FROM books ORDER BY pages DESC LIMIT 1;
+SELECT CONCAT(
+		title,' - ',Released_year)
+		AS summary FROM books ORDER BY released_year DESC LIMIT 3;
+SELECT title, author_lname FROM books WHERE author_lname LIKE '% %';
+SELECT title, released_year, stock_quantity FROM books ORDER BY stock_quantity LIMIT 3;
+SELECT title, author_lname FROM books ORDER BY author_lname, title; 
+SELECT 
+  UPPER(CONCAT('my favorite author is ',
+              author_fname,
+              ' ',
+              author_lname,
+              '!')) AS yell
+	FROM books;
+  
+-- Section 9: Aggregate functions 
+
+USE book_shop;
+
+SELECT COUNT(*) FROM books;
+
+SELECT COUNT(
+DISTINCT(author_fname)) AS names FROM BOOKS;
+
+SELECT title FROM Books WHERE TITLE LIKE '%THE%';
+
+-- COUNT(*) means count the rows
+SELECT COUNT(*) FROM Books WHERE TITLE LIKE '%THE%';
+
+SELECT released_year FROM Books GROUP BY released_year;
+
+SELECT author_lname, COUNT(*) AS books_written
+FROM books
+GROUP BY author_lname
+ORDER BY books_written DESC;
+
+
+
+SELECT CONCAT(author_fname,' ',author_lname) AS full_name, COUNT(*)
+FROM books 
+GROUP BY full_name;
+
+
+SELECT 
+    released_year, COUNT(*), AVG(stock_quantity)
+FROM
+    books
+GROUP BY released_year; 
+
 -- Section 10 Revisiting Data times
+
 CREATE TABLE parent (children TINYINT);
 INSERT INTO parent(children) VALUES (2), (7),(0);
 INSERT INTO parent(children) VALUES (200);
