@@ -1,1 +1,188 @@
+-- Section 17
+-- instagram database clone 
+
+-- SHOW DATABASES;
+CREATE DATABASE ig_clone;
+USE ig_clone;
+
+-- user schema 
+CREATE TABLE users(
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+    );
+
+INSERT INTO users (username) 
+VALUES ('Cluethecat'), ('Charliebrown'),('My_name_is_jeff');
+
+-- photos schema 
+CREATE TABLE photos (
+	id INT PRIMARY KEY auto_increment,
+    image_url VARCHAR(255) NOT NULL,
+    user_id INT NOT NULL, 
+    created_at TIMESTAMP DEFAULT NOW(), 
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+    
+DESC photos;
+SELECT * FROM users;
+
+-- comments schema 
+CREATE TABLE comments(
+	id INT PRIMARY KEY auto_increment,
+	comment_text VARCHAR(255) NOT NULL,
+	user_id INT NOT NULL, 
+	photo_id INT NOT NULL, 
+	created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (photo_id) REFERENCES photos(id)
+    );
+
+-- likes schema
+CREATE TABLE likes(
+	user_id INT NOT NULL,
+    photo_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (photo_id) REFERENCES photos(id),
+    PRIMARY KEY (user_id, photo_id)
+    );
+    
+-- followers schema 
+CREATE TABLE follows(
+    follower_id INT NOT NULL,
+	followee_id INT NOT NULL,
+	created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (follower_id) REFERENCES users(id),
+    FOREIGN KEY (followee_id) REFERENCES users(id),
+    PRIMARY KEY (follower_id, followee_id)
+);
+DESC follows;
+
+-- implementing tag tables
+CREATE TABLE tags(
+	id INT PRIMARY KEY auto_increment,
+	tag_name VARCHAR(255) UNIQUE, 
+    created_at TIMESTAMP DEFAULT NOW()
+    );
+    
+CREATE TABLE photo_tags(
+	photo_id INT NOT NULL,
+    tag_id INT NOT NULL, 
+    FOREIGN KEY (photo_id) REFERENCES photos(id),
+    FOREIGN KEY (tag_id) REFERENCES tags(id),
+    PRIMARY KEY (photo_id, tag_id)
+    );
+    
+SHOW TABLES;
+
+-- Section 18 
+-- working with lots of IG data 
+
+-- insert instagram data which has been removed for space
+
+-- challenge 1 
+-- find the 5 oldest users 
+DESC users;
+
+SELECT * from users 
+ORDER BY created_at LIMIT 5;
+
+-- challenge 2 
+-- what day of the week do most people register 
+SELECT DAYNAME(created_at) AS created_day, COUNT(DAYNAME(created_at)) AS created_day_count FROM users
+GROUP BY created_day
+ORDER BY created_day_count DESC;
+
+-- challenge 3
+-- identify users with no photos
+DESC photos;
+SELECT username, photos.id 
+	FROM users 
+LEFT JOIn photos 
+    ON users.id=photos.user_id
+WHERE photos.id IS NULL;
+
+-- challenge 4 
+-- we want to know who has the most likes on a photo
+show tables;
+DESC likes;
+
+-- working out the most likes 
+select * from likes;
+SELECT photo_id, COUNT(*) AS count_likes FROM likes 
+GROUP BY photo_id
+ORDER BY count_likes DESC;
+
+-- photo and the amount of likes 
+SELECT photo_id, COUNT(*) AS likes_count FROM likes
+GROUP BY photo_id;
+
+DESC likes;
+DESC photos;
+-- joing likes and photos to see user_id 
+SELECT * from LIKES
+LEFT JOIN photos ON photos.id = likes.photo_id;
+
+-- grouping the likes and photo join 
+SELECT photo_id, COUNT(*)  from LIKES
+LEFT JOIN photos ON photos.id = likes.photo_id
+GROUP BY photo_id;
+
+-- joing the three tables and getting the count(likes) information 
+-- final 
+SELECT 
+	username, 
+    photo_id, 
+    COUnt(*) AS likes_count 
+from photos
+	LEfT JOIN users ON photos.user_id = users.id
+	LEFT JOIN  likes ON likes.photo_id = photos.id
+GROUP BY 
+	likes.photo_id, 
+	photos.user_id
+ORDER BY likes_count DESC
+LIMIT 1;
+
+-- challenge 
+-- how many times does the average user post
+SELECT  COUNT(*) FROM photos;
+SELECt COUNT(*) FROM users;
+SELECT 252/100;
+--  (sub queries) average
+SELECT(SELECT COUNT(*) FROM photos)/ (SELECt COUNT(*) FROM users) AS avg;
+
+-- challenge 6 
+-- 5 most popular hashtags 
+SHOW Tables;
+DESC tags;
+DESC photo_tags;
+
+-- joining the 3 tables 
+SELECT * FROM photo_tags
+JOIN photos ON photos.id = photo_tags.photo_id
+JOIN tags ON tags.id= photo_tags.tag_id;
+
+-- do not need photos tables to be joined so it has been commited out 
+-- photos ON photos.id = photo_tags.photo_id JOIN
+-- counting the tags 
+SELECT 
+    tag_name, COUNT(*) AS tag_count
+FROM
+    photo_tags
+        JOIN
+    tags ON tags.id = photo_tags.tag_id
+GROUP BY tag_name
+ORDER BY tag_count DESC
+LIMIT 5;
+
+-- Find all the users who have liked all the photos on the site 
+SELECT 
+    users.id, username, COUNT(*) AS num_likes
+FROM
+    users
+        INNER JOIN
+    likes ON users.id = likes.user_id
+GROUP BY users.id
+HAVING num_likes = (SELECT COUNT(*) FROM photos);
 
