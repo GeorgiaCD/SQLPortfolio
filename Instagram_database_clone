@@ -79,7 +79,8 @@ SHOW TABLES;
 -- Section 18 
 -- working with lots of IG data 
 
--- insert instagram data which has been removed for space
+-- insert supplied instagram data has been removed for simplicity  
+
 
 -- challenge 1 
 -- find the 5 oldest users 
