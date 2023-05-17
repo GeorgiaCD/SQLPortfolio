@@ -160,7 +160,7 @@ SELECT * FROM photo_tags
 JOIN photos ON photos.id = photo_tags.photo_id
 JOIN tags ON tags.id= photo_tags.tag_id;
 
--- do not need photos tables to be joined so it has been commited out 
+-- do not need photos tables to be joined 
 -- photos ON photos.id = photo_tags.photo_id JOIN
 -- counting the tags 
 SELECT 
