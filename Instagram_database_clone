@@ -1,5 +1,4 @@
--- Section 17
--- instagram database clone 
+-- instagram database clone project 
 
 -- SHOW DATABASES;
 CREATE DATABASE ig_clone;
@@ -76,26 +75,23 @@ CREATE TABLE photo_tags(
     
 SHOW TABLES;
 
--- Section 18 
--- working with lots of IG data 
 
 -- insert supplied instagram data has been removed for simplicity  
 
 
--- challenge 1 
 -- find the 5 oldest users 
 DESC users;
 
 SELECT * from users 
 ORDER BY created_at LIMIT 5;
 
--- challenge 2 
+-- challenge 
 -- what day of the week do most people register 
 SELECT DAYNAME(created_at) AS created_day, COUNT(DAYNAME(created_at)) AS created_day_count FROM users
 GROUP BY created_day
 ORDER BY created_day_count DESC;
 
--- challenge 3
+-- challenge 
 -- identify users with no photos
 DESC photos;
 SELECT username, photos.id 
@@ -104,7 +100,7 @@ LEFT JOIn photos
     ON users.id=photos.user_id
 WHERE photos.id IS NULL;
 
--- challenge 4 
+-- challenge 
 -- we want to know who has the most likes on a photo
 show tables;
 DESC likes;
@@ -153,7 +149,7 @@ SELECT 252/100;
 --  (sub queries) average
 SELECT(SELECT COUNT(*) FROM photos)/ (SELECt COUNT(*) FROM users) AS avg;
 
--- challenge 6 
+-- challenge 
 -- 5 most popular hashtags 
 SHOW Tables;
 DESC tags;
